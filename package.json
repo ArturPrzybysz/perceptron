@@ -2,6 +2,14 @@
   "name": "perceptron",
   "version": "0.0.1",
   "dependencies": {
-
+    "@types/node": "^9.4.6",
+    "csv-parse": "^2.0.4",
+    "gnuplot": "0.3.1",
+    "require.js": "1.0.0",
+    "ts-node": "5.0.0",
+    "typescript": "^2.7.2"
+  },
+  "scripts": {
+    "start": "ts-node src/app.ts"
   }
 }
