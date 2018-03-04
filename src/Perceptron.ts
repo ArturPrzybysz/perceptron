@@ -1,44 +1,39 @@
 export class Perceptron {
     weights: number[];
-    readonly bias: number;
-    biasWeight: number;
+    bias: number;
+    learningRate: number;
 
-    constructor(bias: number = 1) {
-        this.weights = new Array(3);
-        for (let i = 0; i < this.weights.length; i++) {
-            this.weights[i] = Math.random();
+    constructor(dimensions: number, learningRate: number) {
+        this.weights = new Array(dimensions);
+        for (let i = 0; i < dimensions; i++) {
+            this.weights[i] = Math.random() * 2 - 1;
         }
-        this.bias = bias;
-    }
+        this.bias = Math.random() * 2 - 1;
 
-    learn(input: number[], expectedOutput: number): void {
-        const output = this.output(input);
-
-        for (let i in this.weights) {
-            this.weights[i] += (expectedOutput - output) * input[i];
-        }
-
-        this.biasWeight += (expectedOutput - output) * this.bias;
+        this.learningRate = learningRate;
     }
 
     value(input: number[]): number {
-        if (this.output(input)) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    private output(input: number[]): number {
-        let value = 0;
         if (input.length !== this.weights.length) {
-            throw "Incorrect input size!";
+            throw "incompatible input";
         }
 
-        for (let i in input) {
-            value += input[i] * this.weights[i];
+        let sum = 0;
+        for (let i = 0; i < input.length; i++) {
+            sum += input[i] * this.weights[i];
         }
+        sum += this.bias;
 
-        return value;
+        return sum;
     }
+
+    learn(input: number[], expectedValue: number): void {
+        const value = this.value(input);
+        for (let i = 0; i < this.weights.length; i++) {
+            this.weights[i] += input[i] * (expectedValue - value) * this.learningRate;
+        }
+
+        this.bias += (expectedValue - value) * this.learningRate;
+    }
+
 }

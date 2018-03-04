@@ -1,29 +1,39 @@
 import * as fs from "fs";
+import {Perceptron} from "./Perceptron";
+import {shuffle} from "./util";
+
+const propel = require("propel");
 
 const gnuplot = require("gnuplot");
 const csvParse = require("csv-parse/lib/sync");
 
+
+// fs.createReadStream('src/data/group_A_spaces.csv')
+//     .pipe(gnuplot()
+//         .set('term png')
+//         .set('output "A.png"')
+//         .plot('"-" using 1:2 title "Column"')
+//     );
+
+const csvFile1 = fs.readFileSync("src/data/group_A.csv", "utf8");
+const csvFile2 = fs.readFileSync("src/data/group_B.csv", "utf8");
 const parseOptions = {
     auto_parse: true,
-    columns: ["x", "y"],
-    delimiter: " ",
+    delimiter: ",",
 };
+let groupA = csvParse(csvFile1, parseOptions);
+let groupB = csvParse(csvFile2, parseOptions);
 
-const csvFile1 = fs.readFileSync("src/data/approximation_train_1.txt", "utf8");
-const csvFile2 = fs.readFileSync("src/data/approximation_train_2.txt", "utf8");
+const perceptron = new Perceptron(1, 0.001);
 
-const groupA = csvParse(csvFile1, parseOptions);
-const groupB = csvParse(csvFile2, parseOptions);
+const dataSet = shuffle(groupB.concat(groupA));
 
-gnuplot()
-    .set('term png')
-    .set('output "out1.png"')
-    .plot('"src/data/approximation_train_1.txt" using 1:2 title "Column"')
-    .end();
+for (const a of dataSet) {
+    perceptron.learn([a[0]], a[1]);
+}
 
 
-gnuplot()
-    .set('term png')
-    .set('output "out1.png"')
-    .plot('"src/data/approximation_train_1.txt" using 1:2 title "Group A", "src/data/approximation_train_2.txt" using 1:2 title "Group B"')
-    .end();
+console.log(" test ", perceptron.value([1]));
+console.log(perceptron.weights);
+console.log(perceptron.bias);
+
